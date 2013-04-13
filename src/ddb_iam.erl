@@ -44,14 +44,21 @@
 -spec credentials(string(), string()) -> 'ok'.
 
 credentials(AccessKeyId, SecretAccessKey) ->
-    'ok' = application:set_env('iam', 'accesskeyid', AccessKeyId),
-    'ok' = application:set_env('iam', 'secretaccesskey', SecretAccessKey).
+    case ets:info('iam') of
+        undefined ->    
+            ets:new('iam', [named_table, public]);
+        _ ->
+            ok
+    end,
+    ets:insert('iam', {'accesskeyid', AccessKeyId}),
+    ets:insert('iam', {'secretaccesskey', SecretAccessKey}),
+    'ok'.
 
 -spec credentials() -> {'ok', string(), string()}.
 
 credentials() ->
-    {'ok', AccessKeyId} = application:get_env('iam', 'accesskeyid'),
-    {'ok', SecretAccessKey} = application:get_env('iam', 'secretaccesskey'),
+    [{'ok', AccessKeyId}] = ets:lookup('iam', 'accesskeyid'),
+    [{'ok', SecretAccessKey}] = ets:lookup('iam', 'secretaccesskey'),
     {'ok', AccessKeyId, SecretAccessKey}.
 
 -spec token(pos_integer()) -> {'ok', string(), string(), string()} |

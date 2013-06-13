@@ -43,7 +43,7 @@
 
 -spec credentials(string(), string()) -> 'ok'.
 
-credentials(AccessKeyId, SecretAccessKey) ->
+ccredentials(AccessKeyId, SecretAccessKey) ->
     case ets:info('iam') of
         undefined ->    
             ets:new('iam', [named_table, public]);
@@ -57,8 +57,8 @@ credentials(AccessKeyId, SecretAccessKey) ->
 -spec credentials() -> {'ok', string(), string()}.
 
 credentials() ->
-    [{'ok', AccessKeyId}] = ets:lookup('iam', 'accesskeyid'),
-    [{'ok', SecretAccessKey}] = ets:lookup('iam', 'secretaccesskey'),
+    [{'accesskeyid', AccessKeyId}] = ets:lookup('iam', 'accesskeyid'),
+    [{'secretaccesskey', SecretAccessKey}] = ets:lookup('iam', 'secretaccesskey'),
     {'ok', AccessKeyId, SecretAccessKey}.
 
 -spec token(pos_integer()) -> {'ok', string(), string(), string()} |

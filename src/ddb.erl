@@ -92,18 +92,18 @@
 -spec credentials(string(), string(), string()) -> 'ok'.
 
 credentials(AccessKeyId, SecretAccessKey, SessionToken) ->
-    'ok' = application:set_env('ddb', 'accesskeyid', AccessKeyId),
-    'ok' = application:set_env('ddb', 'secretaccesskey', SecretAccessKey),
-    'ok' = application:set_env('ddb', 'sessiontoken', SessionToken).
+    true = ets:insert('iam', {'accesskeyid', AccessKeyId}),
+    true = ets:insert('iam', {'secretaccesskey', SecretAccessKey}),
+    true = ets:insert('iam', {'sessiontoken', SessionToken}).
 
 %%% Retrieve stored credentials.
 
 -spec credentials() -> {'ok', string(), string(), string()}.
 
 credentials() ->
-    {'ok', AccessKeyId} = application:get_env('ddb', 'accesskeyid'),
-    {'ok', SecretAccessKey} = application:get_env('ddb', 'secretaccesskey'),
-    {'ok', SessionToken} = application:get_env('ddb', 'sessiontoken'),
+    [{'accesskeyid', AccessKeyId}] = ets:lookup('iam', 'accesskeyid'),
+    [{'secretaccesskey', SecretAccessKey}] = ets:lookup('iam', 'secretaccesskey'),
+    [{'sessiontoken', SessionToken}] = ets:lookup('iam', 'sessiontoken'),
     {'ok', AccessKeyId, SecretAccessKey, SessionToken}.
 
 %%% Create a key type, either hash or hash and range.

@@ -71,6 +71,9 @@ retry(F, Max, N, H)
 			    %% This is expected in some use cases, so just trace at info level
 			    ok = lager:info("Got client error (~s) ~p, aborting...", [Code, Body]),
 			    {'error', H(Body)};
+			<<"com.amazon.coral.service#UnrecognizedClientException">> ->
+				ok = lager:warning("Got client error (~s) ~p, expired token...", [Code, Body]),
+			    {'error', 'expired_token'};
 			_ ->
 			    ok = lager:error("Got client error (~s) ~p, aborting...", [Code, Body]),
 			    {'error', H(Body)}

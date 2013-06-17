@@ -92,18 +92,24 @@
 -spec credentials(string(), string(), string()) -> 'ok'.
 
 credentials(AccessKeyId, SecretAccessKey, SessionToken) ->
-    true = ets:insert('iam', {'accesskeyid', AccessKeyId}),
-    true = ets:insert('iam', {'secretaccesskey', SecretAccessKey}),
-    true = ets:insert('iam', {'sessiontoken', SessionToken}).
+    case ets:info('ddb') of
+        undefined ->    
+            ets:new('ddb', [named_table, public]);
+        _ ->
+            ok
+    end,
+    true = ets:insert('ddb', {'accesskeyid', AccessKeyId}),
+    true = ets:insert('ddb', {'secretaccesskey', SecretAccessKey}),
+    true = ets:insert('ddb', {'sessiontoken', SessionToken}).
 
 %%% Retrieve stored credentials.
 
 -spec credentials() -> {'ok', string(), string(), string()}.
 
 credentials() ->
-    [{'accesskeyid', AccessKeyId}] = ets:lookup('iam', 'accesskeyid'),
-    [{'secretaccesskey', SecretAccessKey}] = ets:lookup('iam', 'secretaccesskey'),
-    [{'sessiontoken', SessionToken}] = ets:lookup('iam', 'sessiontoken'),
+    [{'accesskeyid', AccessKeyId}] = ets:lookup('ddb', 'accesskeyid'),
+    [{'secretaccesskey', SecretAccessKey}] = ets:lookup('ddb', 'secretaccesskey'),
+    [{'sessiontoken', SessionToken}] = ets:lookup('ddb', 'sessiontoken'),
     {'ok', AccessKeyId, SecretAccessKey, SessionToken}.
 
 %%% Create a key type, either hash or hash and range.

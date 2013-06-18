@@ -43,7 +43,7 @@
 
 -spec credentials(string(), string()) -> 'ok'.
 
-ccredentials(AccessKeyId, SecretAccessKey) ->
+credentials(AccessKeyId, SecretAccessKey) ->
     case ets:info('iam') of
         undefined ->    
             ets:new('iam', [named_table, public]);
